@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas RC</title>  
+    <style type="text/css">
+    /* Estilos generales */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f6f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2, h3 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+  
+  /* Tabla de prioridades */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .table th, .table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .table th {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  .table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .btn {
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+  }
+  
+  /* Formulario de prioridades */
+  .form-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+     </style> 
+</head>
+<body> 
+<div class="container">
+    <div class="container">
+        <h2>Gestión de Tickets</h2>
+        <!-- Lista de areas -->
+        <div *ngIf="tickets && tickets.length > 0; else noData">
+            <h3>Lista de Tickets</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Descripción</th>
+                  <th>Usuario Creador</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ticket of tickets">
+                  <td>{{ ticket.idTicket }}</td>
+                  <td>{{ ticket.titulo }}</td>
+                  <td>{{ ticket.descripcion }}</td>
+                  <td>{{ ticket.usuarioCreador.idUsuario }}</td>
+                  <td>
+                    <button (click)="mostrarFormulario(ticket)" class="btn btn-primary">Editar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+        <ng-template #noData>
+            <p>No hay Ticket registrados.</p>
+        </ng-template>
+    
+        <!-- Botón para crear nueva area -->
+        <button (click)="mostrarFormulario()" class="btn btn-success">Crear Nueva Solicitud</button>
+    
+        <!-- Formulario para Crear/Editar area -->
+        <div class="form-container" *ngIf="mostrarForm">
+            <h3>{{ ticketSeleccionada ? 'Editar Solicitud' : 'Crear Nueva Solicitud' }}</h3>
+            <form (ngSubmit)="guardarTicket()">
+
+
+              <div class="form-group">
+                <label for="titulo">Título:</label>
+                <input id="titulo" [(ngModel)]="ticketForm.titulo" name="titulo" class="form-control"  type="text" required />
+              </div>
+          
+              <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" formControlName="descripcion"></textarea>
+              </div>
+          
+              <div class="form-group">
+                <label for="usuarioCreador">ID Usuario Creador:</label>
+                <input id="usuarioCreador" formControlName="usuarioCreador.idUsuario" type="number" />
+              </div>
+          
+              <<div class="form-group">
+                <label for="agente">ID Agente:</label>
+                <input id="agente" formControlName="agente.idUsuario" type="number" />
+              </div>
+          
+              <div class="form-group">
+                <label for="categoria">ID Categoría:</label>
+                <input id="categoria" formControlName="categoria.idCategoria" type="number" />
+              </div>
+          
+              <div class="form-group">
+                <label for="prioridad">ID Prioridad:</label>
+                <input id="prioridad" formControlName="prioridad.idPrioridad" type="number" />
+              </div>
+          
+              <div class="form-group">
+                <label for="area">ID Área:</label>
+                <input id="area" formControlName="area.idArea" type="number" />
+              </div>
+          
+              <div class="form-group">
+                <label for="estado">Estado:</label>
+                <input id="estado" formControlName="estado" type="number" value="1" />
+              </div>
+          
+              <button type="submit" class="btn btn-success">{{ ticketSeleccionada ? 'Actualizar' : 'Crear' }}</button>
+              <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary">Cancelar</button>
+            </form>
+          
+        </div>
+    </div>    
+  </div>
+</body>
+</html> 
