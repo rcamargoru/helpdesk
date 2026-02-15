@@ -1,0 +1,17 @@
+# Java
+/target/
+*.class
+*.log
+
+# Node / Angular
+/node_modules/
+dist/
+
+# IDE
+/.idea/
+/.vscode/
+/nbproject/private/
+
+# OS
+.DS_Store
+Thumbs.db
