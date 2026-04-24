@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 /**
  *
  * @author Rc
@@ -28,7 +29,7 @@ private Long idUsuarioAuth;
 
 @JsonManagedReference(value = "usuario-rol")
 @OneToMany(mappedBy = "usuario")
-private List<UsuarioRol> usuarioRoles;
+private Set<UsuarioRol> usuarioRoles;
 
 private String oIdAzure;
 private String idTenant;
@@ -52,11 +53,11 @@ private String actualizadoPor;
         this.idUsuarioAuth = idUsuarioAuth;
     }
 
-    public List<UsuarioRol> getUsuarioRoles() {
+    public Set<UsuarioRol> getUsuarioRoles() {
         return usuarioRoles;
     }
 
-    public void setUsuarioRoles(List<UsuarioRol> usuarioRoles) {
+    public void setUsuarioRoles(Set<UsuarioRol> usuarioRoles) {
         this.usuarioRoles = usuarioRoles;
     }
     public String getoIdAzure() {

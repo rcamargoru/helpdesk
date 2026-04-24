@@ -30,12 +30,12 @@ private Long idRolPermisoAuth;
 
     @JsonBackReference(value = "permiso-rol") // Rompe la referencia cíclica desde permiso
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "permiso", nullable = false)
+    @JoinColumn(name = "permisoAuth", nullable = false)
     private Permiso permiso;
 
     @JsonBackReference(value = "rol-permiso") // Rompe la referencia cíclica desde Rol
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rol", nullable = false)
+    @JoinColumn(name = "rolAuth", nullable = false)
     private Rol rol;        
 
 

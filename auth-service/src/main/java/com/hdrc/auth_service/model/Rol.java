@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -30,11 +31,11 @@ public class Rol {
 
 @JsonManagedReference(value = "rol-usuario")
 @OneToMany(mappedBy = "rol")
-private List<UsuarioRol> usuarioRoles;
+private Set<UsuarioRol> usuarioRoles;
     
     @JsonManagedReference(value = "rol-permiso") // Rompe la referencia cíclica hacia RolesPermisos
     @OneToMany(mappedBy = "rol")
-    private List<RolPermiso> RolesPermiso;
+    private Set<RolPermiso> RolesPermiso;
      
 
     private String nombreRolAuth;
@@ -53,21 +54,21 @@ private List<UsuarioRol> usuarioRoles;
         this.idRolAuth = idRolAuth;
     }
 
-    public List<UsuarioRol> getUsuarioRoles() {
+    public Set<UsuarioRol> getUsuarioRoles() {
         return usuarioRoles;
     }
 
-    public void setUsuarioRoles(List<UsuarioRol> usuarioRoles) {
+    public void setUsuarioRoles(Set<UsuarioRol> usuarioRoles) {
         this.usuarioRoles = usuarioRoles;
     }
     public String getNombreRolAuth() {
         return nombreRolAuth;
     }
-    public List<RolPermiso> getRolesPermiso() {
+    public Set<RolPermiso> getRolesPermiso() {
         return RolesPermiso;
     }
 
-    public void setRolesPermiso(List<RolPermiso> RolesPermiso) {
+    public void setRolesPermiso(Set<RolPermiso> RolesPermiso) {
         this.RolesPermiso = RolesPermiso;
     }
     public void setNombreRolAuth(String nombreRolAuth) {

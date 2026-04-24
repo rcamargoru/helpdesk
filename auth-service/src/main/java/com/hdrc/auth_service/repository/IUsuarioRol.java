@@ -6,11 +6,13 @@ package com.hdrc.auth_service.repository;
 
 import com.hdrc.auth_service.model.UsuarioRol;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Administrador
  */
+@Repository
 public interface IUsuarioRol extends JpaRepository<UsuarioRol, Long>   {
     
 }
