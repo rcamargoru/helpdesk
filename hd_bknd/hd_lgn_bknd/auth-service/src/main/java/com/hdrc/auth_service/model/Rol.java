@@ -29,9 +29,9 @@ public class Rol {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRolAuth;
 
-@JsonManagedReference(value = "rol-usuario")
-@OneToMany(mappedBy = "rol")
-private Set<UsuarioRol> usuarioRoles;
+//@JsonManagedReference(value = "rol-usuario")
+//@OneToMany(mappedBy = "rol")
+//private Set<UsuarioRol> usuarioRoles;
     
     @JsonManagedReference(value = "rol-permiso") // Rompe la referencia cíclica hacia RolesPermisos
     @OneToMany(mappedBy = "rol")
@@ -54,13 +54,13 @@ private Set<UsuarioRol> usuarioRoles;
         this.idRolAuth = idRolAuth;
     }
 
-    public Set<UsuarioRol> getUsuarioRoles() {
-        return usuarioRoles;
-    }
-
-    public void setUsuarioRoles(Set<UsuarioRol> usuarioRoles) {
-        this.usuarioRoles = usuarioRoles;
-    }
+//    public Set<UsuarioRol> getUsuarioRoles() {
+//        return usuarioRoles;
+//    }
+//
+//    public void setUsuarioRoles(Set<UsuarioRol> usuarioRoles) {
+//        this.usuarioRoles = usuarioRoles;
+//    }
     public String getNombreRolAuth() {
         return nombreRolAuth;
     }

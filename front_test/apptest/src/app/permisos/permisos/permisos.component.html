@@ -1,0 +1,28 @@
+<h2>Permisos del Usuario</h2>
+
+<!-- 🔍 DEBUG -->
+<p><strong>DEBUG:</strong> {{ auth.permisosSignal() | json }}</p>
+
+<!-- ✅ Lista -->
+<ul *ngIf="auth.permisosSignal().length > 0; else sinPermisos">
+  <li *ngFor="let p of auth.permisosSignal()">
+    🔑 {{ p }}
+  </li>
+</ul>
+
+<!-- ❌ Sin permisos -->
+<ng-template #sinPermisos>
+  <p>No hay permisos disponibles</p>
+</ng-template>
+
+<hr>
+
+<h3>Acciones</h3>
+
+<button *ngIf="auth.hasPermission('LOGIN_ACCESS')">
+  Acceso Login
+</button>
+
+<button *ngIf="auth.hasPermission('LOGIN_REFRESH')">
+  Refresh Token
+</button>

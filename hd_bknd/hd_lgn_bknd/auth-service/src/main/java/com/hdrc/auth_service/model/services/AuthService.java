@@ -4,7 +4,6 @@
  */
 package com.hdrc.auth_service.model.services;
 
-//import com.hdrc.auth_service.repository.ISesionRepository;
 import com.hdrc.auth_service.dto.AuthRequestDto;
 import com.hdrc.auth_service.dto.AuthResponseDto;
 import com.hdrc.auth_service.model.SesionUsuario;
@@ -15,10 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-//import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,19 +23,31 @@ import org.springframework.stereotype.Service;
  * @author Administrador
  */
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final IUsuario usuarioRepository;
     private final TokenService tokenService;
+     private final AuthorityService authorityService;
     private final ISesionUsuario sesionRepository;
 
+    
+    public AuthService(TokenService jwtService,
+                        IUsuario usuarioRepository,
+                        ISesionUsuario sesionRepository,
+                        AuthorityService authorityService,AuthenticationManager authenticationManager) {
+        this.tokenService = jwtService;
+        this.usuarioRepository = usuarioRepository;
+        this.sesionRepository = sesionRepository;
+        this.authorityService = authorityService;
+        this.authenticationManager = authenticationManager;
+    }    
+      
+    
     public AuthResponseDto login(AuthRequestDto request, HttpServletRequest httpRequest) {
 
-        // 1. AUTENTICACIÓN (Spring valida password aquí)
-        System.out.println("");
-        
+        // 🔥 1. Autenticación real con Spring Security
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.usuario(),
@@ -46,47 +55,38 @@ public class AuthService {
                 )
         );
 
-        // 2. SOLO CARGA BÁSICA (SIN JOIN FETCH PROFUNDO)
-        Usuario usuario = usuarioRepository
-                .findByNombreLgnUsuario(request.usuario())
-                .orElseThrow();
+        // 🔥 2. Obtener usuario
+        Usuario usuario = usuarioRepository.findByNombreLgnUsuario(request.usuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        System.out.println("pare");
+        // 🔥 3. Permisos dinámicos
+        List<String> permisos = authorityService.getPermisos(usuario);
 
-        // 3. SOLO ROLES (NO PERMISOS AQUÍ)
-        List<String> roles = usuario.getUsuarioRoles()
-                .stream()
-                .map(ur -> "ROLE_" + ur.getRol().getNombreRolAuth())
-                .distinct()
-                .toList();
-
-        // 4. SESSION ID
+        // 🔥 4. Generar sessionId
         String sessionId = UUID.randomUUID().toString();
 
-        // 5. TOKEN
-        String accessToken = tokenService.generarAccessToken(
-                usuario.getIdUsuarioAuth().toString(),
-                sessionId,
-                roles,
-                List.of() // permisos fuera del login
-        );
-
-        String refreshToken = tokenService.generarRefreshToken(
-                usuario.getIdUsuarioAuth().toString(),
+        // 🔥 5. Crear tokens
+        String accessToken = tokenService.generateAccessToken(
+                request.usuario(),
+                permisos,
                 sessionId
         );
 
-        // 6. SESIÓN
+        String refreshToken = tokenService.generateRefreshToken(request.usuario());
+
+        // 💾 6. Guardar sesión
         SesionUsuario sesion = new SesionUsuario();
         sesion.setUsuario(usuario);
-        sesion.setSesionPrimId(sessionId);
         sesion.setRefreshToken(refreshToken);
+        sesion.setSesionPrimId(sessionId);
         sesion.setFechaCreacion(LocalDateTime.now());
         sesion.setFechaExpiracion(LocalDateTime.now().plusDays(7));
         sesion.setActivo(true);
-        sesion.setDispositivo(httpRequest.getHeader("User-Agent"));
+        //sesion.setIpCliente(ip);
+        //sesion.setDispositivo(device);
 
         sesionRepository.save(sesion);
 
-        // 7. RESPONSE
         return new AuthResponseDto(accessToken, refreshToken);
     }
 }

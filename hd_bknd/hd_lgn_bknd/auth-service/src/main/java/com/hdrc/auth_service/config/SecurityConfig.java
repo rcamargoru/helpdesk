@@ -31,37 +31,6 @@ public class SecurityConfig {
     private final TokenFilter tokenFilter;
     private final IUsuario usuarioRepository;
 
-    // 🔐 USERDETAILS SERVICE (LIVIANO - SIN PERMISOS)
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> {
-System.out.println("pas "+
-    new BCryptPasswordEncoder().encode("123456")
-);
-            Usuario usuario = usuarioRepository
-                    .findByNombreLgnUsuario(username)
-                    .orElseThrow(() ->
-                            new UsernameNotFoundException("Usuario no encontrado")
-                    );
-
-            // 🔹 SOLO ROLES (NO PERMISOS AQUÍ)
-            List<SimpleGrantedAuthority> roles = usuario.getUsuarioRoles()
-                    .stream()
-                    .map(ur -> new SimpleGrantedAuthority(
-                            "ROLE_" + ur.getRol().getNombreRolAuth()
-                    ))
-                    .toList();
-
-            System.out.println("USER: " + usuario.getNombreLgnUsuario());
-            System.out.println("HASH: " + usuario.getHashPwd());
-
-            return new org.springframework.security.core.userdetails.User(
-                    usuario.getNombreLgnUsuario(),
-                    usuario.getHashPwd(),
-                    roles
-            );
-        };
-    }
 
     // 🔐 PASSWORD ENCODER
     @Bean

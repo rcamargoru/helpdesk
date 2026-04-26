@@ -4,13 +4,19 @@
  */
 package com.hdrc.auth_service.model.services;
 
+import com.hdrc.auth_service.model.Usuario;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import java.util.Date;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
+import io.jsonwebtoken.security.Keys;
 import java.util.List;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 
 /**
  *
@@ -21,51 +27,70 @@ public class TokenService {
     
     @Value("${JWT_MASTERSECRET}")
     private String MasterSecret;
- 
-    public String generarAccessToken(String userId, String sessionId,List<String> roles, List<String> permisos) {
-        return Jwts.builder()
-                .setSubject(userId)
-                .claim("sessionId", sessionId)
-                .claim("roles", roles)
-                .claim("permisos", permisos)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 15 min
-                .signWith(HS256, MasterSecret)
-                .compact();
-    }    
+    private final long AccExp = 1000 * 60 * 15; // 15 min
+    private final long RfhExp = 1000L * 60 * 60 * 24 * 7; // 7 días
     
-     public String generarRefreshToken(String userId, String sessionId) {
+   private SecretKey getKey() {
+        return Keys.hmacShaKeyFor(MasterSecret.getBytes());
+    }
+   
+   
+    public String generateAccessToken(String username, List<String> permisos, String sessionId) {
+        System.out.println("asdasd");
         return Jwts.builder()
-                .setSubject(userId)
-                .claim("sessionId", sessionId) // 🔥 AQUÍ TAMBIÉN
+                .setSubject(username)
+                .claim("permissions", permisos)
+                .claim("sessionId", sessionId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 días
-                .signWith(HS256, MasterSecret)
+                .setExpiration(new Date(System.currentTimeMillis() + AccExp))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
-    }  
+    }
+    
+    public String generateRefreshToken(String username) {
+
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("type", "refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + RfhExp))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
      
       public String extraerUsuario(String token) {
         return getClaims(token).getSubject();
     }
 
-    public String extraerSessionId(String token) {
-        return getClaims(token).get("sessionId", String.class);
+      
+          public boolean isTokenValid(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
     }
 
-    public List<String> extraerRoles(String token) {
-        return getClaims(token).get("roles", List.class);
-    }
+      
+public String extraerSessionId(String token) {
+    return getClaims(token).get("sessionId", String.class);
+}
 
-    public List<String> extraerPermisos(String token) {
-        return getClaims(token).get("permisos", List.class);
-    }
+public List<String> extraerRoles(String token) {
+    return getClaims(token).get("roles", List.class);
+}
 
-    private Claims getClaims(String token) {
+public List<String> extraerPermisos(String token) {
+    return getClaims(token).get("permisos", List.class);
+    
+}
+public Claims getClaims(String token) {
     return Jwts.parser()
-    .setSigningKey(MasterSecret)
-    .build()
-    .parseClaimsJws(token)
-    .getBody();
-    }   
-     
+            .verifyWith(getKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
+}
+
 }

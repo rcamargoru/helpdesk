@@ -22,4 +22,8 @@ public interface ISesionUsuario extends JpaRepository<SesionUsuario, Long>{
     Optional<SesionUsuario> findBySesionPrimIdAndActivoTrue(String sesionPrimId);
 
    // List<SesionUsuario> findBySesionPrimIdAndActivoTrue(Long usuarioId);   
+
+   boolean existsByRefreshTokenAndActivoTrue(String token);
+
+   boolean existsBySesionPrimIdAndActivoTrue(String sessionId);
 }

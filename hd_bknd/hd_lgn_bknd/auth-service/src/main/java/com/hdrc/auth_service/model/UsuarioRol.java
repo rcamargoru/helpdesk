@@ -23,23 +23,27 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "AuthGnUsuarioRol")
 public class UsuarioRol {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUsuarioRol;
 
-@JsonBackReference(value = "usuario-rol")
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "usuario", nullable = false)
-private Usuario usuario;
+    @JsonBackReference(value = "usuario-rol")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario", nullable = false)
+    private Usuario usuario;
 
-@JsonBackReference(value = "rol-usuario")
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "rol", nullable = false)
-private Rol rol;
-    
+    @JsonBackReference(value = "rol-usuario")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rol", nullable = false)
+    private Rol rol;
+
     private LocalDateTime fechaCreacion = LocalDateTime.now();
     private String creadoPor;
+
+    private LocalDateTime fechaInicio = LocalDateTime.now();
+    private LocalDateTime fechaFin;
+    private int activo;
 
     public Long getIdUsuarioRol() {
         return idUsuarioRol;
@@ -53,7 +57,6 @@ private Rol rol;
         return usuario;
     }
 
-  
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
@@ -81,5 +84,37 @@ private Rol rol;
     public void setCreadoPor(String creadoPor) {
         this.creadoPor = creadoPor;
     }
+
+
+    public LocalDateTime getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDateTime fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDateTime getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDateTime fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public int getActivo() {
+        return activo;
+    }
+
+    public void setActivo(int activo) {
+        this.activo = activo;
+    }
+    
+public boolean isVigente() {
+    LocalDateTime ahora = LocalDateTime.now();
+    return (fechaInicio == null || !ahora.isBefore(fechaInicio)) &&
+           (fechaFin == null || !ahora.isAfter(fechaFin));
+    
+}
 
 }

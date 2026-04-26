@@ -156,4 +156,5 @@ private boolean activo;
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
+
 }

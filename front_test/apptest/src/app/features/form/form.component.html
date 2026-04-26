@@ -1,0 +1,13 @@
+<p>form works!</p>
+
+    <h2>Formulario</h2>
+
+    <form (ngSubmit)="enviar()">
+      <input [(ngModel)]="data.usuario" name="nombre" placeholder="Nombre" required>
+      <br><br>
+
+      <input [(ngModel)]="data.clave" name="descripcion" placeholder="Descripción">
+      <br><br>
+
+      <button type="submit">Enviar</button>
+    </form>
